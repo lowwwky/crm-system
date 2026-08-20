@@ -1,0 +1,751 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Главная | HR Система{% endblock %}
+
+{% block content %}
+
+<style>
+    .dashboard-header {
+        background: var(--bg-card, #ffffff);
+        border: 1px solid var(--border-soft, #f3e5eb);
+        border-radius: var(--radius-card-large, 20px);
+        box-shadow: var(--shadow-card, 0 10px 30px rgba(217, 106, 158, 0.08));
+        padding: 32px;
+        margin-bottom: 24px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .dashboard-header::after {
+        content: "";
+        position: absolute;
+        width: 180px;
+        height: 180px;
+        right: -60px;
+        top: -70px;
+        border-radius: 50%;
+        background: var(--pink-100, #fce8f3);
+        opacity: 0.6;
+    }
+
+    .welcome-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-primary, #2c2428);
+        margin-bottom: 8px;
+    }
+
+    .welcome-text {
+        color: var(--text-muted, #8c7a82);
+        margin-bottom: 0;
+    }
+
+    .dashboard-card {
+        background: var(--bg-card, #ffffff);
+        border: 1px solid var(--border-soft, #f3e5eb);
+        border-radius: var(--radius-card, 16px);
+        box-shadow: var(--shadow-card, 0 10px 30px rgba(217, 106, 158, 0.08));
+        padding: 24px;
+        height: 100%;
+    }
+
+    .stat-card {
+        background: var(--bg-card, #ffffff);
+        border: 1px solid var(--border-soft, #f3e5eb);
+        border-radius: var(--radius-card, 16px);
+        box-shadow: var(--shadow-card, 0 10px 30px rgba(217, 106, 158, 0.08));
+        padding: 22px;
+        height: 100%;
+        transition: all 0.2s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(217, 106, 158, 0.12);
+    }
+
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        background: var(--pink-100, #fce8f3);
+        color: var(--pink-500, #d96a9e);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        margin-bottom: 16px;
+    }
+
+    .stat-number {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--text-primary, #2c2428);
+    }
+
+    .stat-label {
+        color: var(--text-muted, #8c7a82);
+        font-size: 0.9rem;
+        margin-top: 2px;
+    }
+
+    .card-title-custom {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-primary, #2c2428);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .card-title-custom i {
+        color: var(--pink-500, #d96a9e);
+        font-size: 1.3rem;
+    }
+
+    .quick-action {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px;
+        border-radius: 14px;
+        border: 1px solid var(--border-soft, #f3e5eb);
+        text-decoration: none;
+        color: var(--text-primary, #2c2428);
+        transition: all 0.2s ease;
+        margin-bottom: 10px;
+    }
+
+    .quick-action:last-child {
+        margin-bottom: 0;
+    }
+
+    .quick-action:hover {
+        background: var(--pink-100, #fce8f3);
+        color: var(--text-primary, #2c2428);
+        transform: translateX(3px);
+    }
+
+    .quick-action-icon {
+        width: 42px;
+        height: 42px;
+        flex-shrink: 0;
+        border-radius: 12px;
+        background: var(--pink-100, #fce8f3);
+        color: var(--pink-500, #d96a9e);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+
+    .quick-action-title {
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+
+    .quick-action-description {
+        color: var(--text-muted, #8c7a82);
+        font-size: 0.8rem;
+        margin-top: 2px;
+    }
+
+    .activity-item {
+        display: flex;
+        gap: 14px;
+        padding: 14px 0;
+        border-bottom: 1px dashed var(--border-soft, #f3e5eb);
+    }
+
+    .activity-item:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .activity-icon {
+        width: 40px;
+        height: 40px;
+        flex-shrink: 0;
+        border-radius: 12px;
+        background: var(--pink-100, #fce8f3);
+        color: var(--pink-500, #d96a9e);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .activity-title {
+        color: var(--text-primary, #2c2428);
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .activity-time {
+        color: var(--text-muted, #8c7a82);
+        font-size: 0.8rem;
+        margin-top: 3px;
+    }
+
+    .event-item {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px;
+        border-radius: 14px;
+        background: #fff8fb;
+        margin-bottom: 10px;
+    }
+
+    .event-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .event-date {
+        width: 48px;
+        height: 48px;
+        flex-shrink: 0;
+        border-radius: 12px;
+        background: var(--pink-100, #fce8f3);
+        color: var(--pink-500, #d96a9e);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .event-day {
+        font-weight: 700;
+        font-size: 1.1rem;
+        line-height: 1;
+    }
+
+    .event-month {
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        margin-top: 3px;
+    }
+
+    .event-title {
+        font-weight: 600;
+        color: var(--text-primary, #2c2428);
+        font-size: 0.9rem;
+    }
+
+    .event-description {
+        color: var(--text-muted, #8c7a82);
+        font-size: 0.8rem;
+        margin-top: 3px;
+    }
+
+    .btn-pink {
+        background: linear-gradient(
+            135deg,
+            var(--pink-500, #d96a9e),
+            var(--pink-600, #c45287)
+        );
+        color: #ffffff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .btn-pink:hover {
+        color: #ffffff;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(217, 106, 158, 0.3);
+    }
+
+    .btn-outline-pink {
+        border: 1px solid var(--pink-500, #d96a9e);
+        color: var(--pink-500, #d96a9e);
+        background: transparent;
+        padding: 9px 18px;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .btn-outline-pink:hover {
+        background: var(--pink-100, #fce8f3);
+        color: var(--pink-600, #c45287);
+    }
+</style>
+
+
+<div class="container-fluid p-0">
+
+    <!-- ПРИВЕТСТВИЕ -->
+    <div class="dashboard-header">
+
+        <div class="position-relative" style="z-index: 1;">
+
+            <div class="row align-items-center">
+
+                <div class="col-lg-8">
+
+                    <h1 class="welcome-title">
+                        Добро пожаловать,
+                        {% if user.first_name %}
+                            {{ user.first_name }}
+                        {% else %}
+                            {{ user.username }}
+                        {% endif %}
+                        👋
+                    </h1>
+
+                    <p class="welcome-text">
+                        Здесь собрана основная информация о вашей HR-системе.
+                        Хорошего рабочего дня!
+                    </p>
+
+                </div>
+
+                <div class="col-lg-4 mt-3 mt-lg-0 text-lg-end">
+
+                    <a href="{% url 'account:info' %}"
+                       class="btn-outline-pink">
+                        <i class="bi bi-person"></i>
+                        Мой профиль
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- СТАТИСТИКА -->
+    <div class="row g-4 mb-4">
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    <i class="bi bi-people"></i>
+                </div>
+
+                <div class="stat-number">
+                    124
+                </div>
+
+                <div class="stat-label">
+                    Сотрудников
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    <i class="bi bi-person-plus"></i>
+                </div>
+
+                <div class="stat-number">
+                    18
+                </div>
+
+                <div class="stat-label">
+                    Кандидатов
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    <i class="bi bi-briefcase"></i>
+                </div>
+
+                <div class="stat-number">
+                    7
+                </div>
+
+                <div class="stat-label">
+                    Открытых вакансий
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    <i class="bi bi-calendar-check"></i>
+                </div>
+
+                <div class="stat-number">
+                    3
+                </div>
+
+                <div class="stat-label">
+                    События сегодня
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ОСНОВНАЯ ОБЛАСТЬ -->
+    <div class="row g-4">
+
+        <!-- БЫСТРЫЕ ДЕЙСТВИЯ -->
+        <div class="col-lg-4">
+
+            <div class="dashboard-card">
+
+                <div class="card-title-custom">
+                    <i class="bi bi-lightning-charge"></i>
+                    Быстрые действия
+                </div>
+
+
+                <a href="#" class="quick-action">
+
+                    <div class="quick-action-icon">
+                        <i class="bi bi-person-plus"></i>
+                    </div>
+
+                    <div>
+                        <div class="quick-action-title">
+                            Добавить сотрудника
+                        </div>
+
+                        <div class="quick-action-description">
+                            Создать новую карточку сотрудника
+                        </div>
+                    </div>
+
+                </a>
+
+
+                <a href="#" class="quick-action">
+
+                    <div class="quick-action-icon">
+                        <i class="bi bi-person-badge"></i>
+                    </div>
+
+                    <div>
+                        <div class="quick-action-title">
+                            Добавить кандидата
+                        </div>
+
+                        <div class="quick-action-description">
+                            Добавить нового кандидата
+                        </div>
+                    </div>
+
+                </a>
+
+
+                <a href="#" class="quick-action">
+
+                    <div class="quick-action-icon">
+                        <i class="bi bi-calendar-plus"></i>
+                    </div>
+
+                    <div>
+                        <div class="quick-action-title">
+                            Создать событие
+                        </div>
+
+                        <div class="quick-action-description">
+                            Добавить событие в календарь
+                        </div>
+                    </div>
+
+                </a>
+
+
+                <a href="{% url 'account:info' %}" class="quick-action">
+
+                    <div class="quick-action-icon">
+                        <i class="bi bi-person-gear"></i>
+                    </div>
+
+                    <div>
+                        <div class="quick-action-title">
+                            Настроить профиль
+                        </div>
+
+                        <div class="quick-action-description">
+                            Изменить данные профиля
+                        </div>
+                    </div>
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- ПОСЛЕДНИЕ ДЕЙСТВИЯ -->
+        <div class="col-lg-4">
+
+            <div class="dashboard-card">
+
+                <div class="card-title-custom">
+                    <i class="bi bi-clock-history"></i>
+                    Последние действия
+                </div>
+
+
+                <div class="activity-item">
+
+                    <div class="activity-icon">
+                        <i class="bi bi-person-plus"></i>
+                    </div>
+
+                    <div>
+                        <div class="activity-title">
+                            Добавлен новый сотрудник
+                        </div>
+
+                        <div class="activity-time">
+                            Сегодня, 14:32
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="activity-item">
+
+                    <div class="activity-icon">
+                        <i class="bi bi-file-earmark-person"></i>
+                    </div>
+
+                    <div>
+                        <div class="activity-title">
+                            Обновлена карточка кандидата
+                        </div>
+
+                        <div class="activity-time">
+                            Сегодня, 12:15
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="activity-item">
+
+                    <div class="activity-icon">
+                        <i class="bi bi-calendar-check"></i>
+                    </div>
+
+                    <div>
+                        <div class="activity-title">
+                            Добавлено собеседование
+                        </div>
+
+                        <div class="activity-time">
+                            Вчера, 18:40
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="activity-item">
+
+                    <div class="activity-icon">
+                        <i class="bi bi-pencil-square"></i>
+                    </div>
+
+                    <div>
+                        <div class="activity-title">
+                            Изменены данные сотрудника
+                        </div>
+
+                        <div class="activity-time">
+                            Вчера, 16:20
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- СОБЫТИЯ -->
+        <div class="col-lg-4">
+
+            <div class="dashboard-card">
+
+                <div class="card-title-custom">
+                    <i class="bi bi-calendar3"></i>
+                    Ближайшие события
+                </div>
+
+
+                <div class="event-item">
+
+                    <div class="event-date">
+
+                        <span class="event-day">
+                            20
+                        </span>
+
+                        <span class="event-month">
+                            авг
+                        </span>
+
+                    </div>
+
+                    <div>
+
+                        <div class="event-title">
+                            Собеседование
+                        </div>
+
+                        <div class="event-description">
+                            15:00 · Frontend Developer
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="event-item">
+
+                    <div class="event-date">
+
+                        <span class="event-day">
+                            21
+                        </span>
+
+                        <span class="event-month">
+                            авг
+                        </span>
+
+                    </div>
+
+                    <div>
+
+                        <div class="event-title">
+                            Встреча с кандидатом
+                        </div>
+
+                        <div class="event-description">
+                            12:30 · Backend Developer
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="event-item">
+
+                    <div class="event-date">
+
+                        <span class="event-day">
+                            23
+                        </span>
+
+                        <span class="event-month">
+                            авг
+                        </span>
+
+                    </div>
+
+                    <div>
+
+                        <div class="event-title">
+                            День рождения
+                        </div>
+
+                        <div class="event-description">
+                            Анна Иванова
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- НИЖНЯЯ ПАНЕЛЬ -->
+    <div class="row g-4 mt-1">
+
+        <div class="col-12">
+
+            <div class="dashboard-card">
+
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+
+                    <div>
+
+                        <div class="card-title-custom mb-1">
+                            <i class="bi bi-info-circle"></i>
+                            HR-панель
+                        </div>
+
+                        <div class="text-muted">
+                            Используйте боковое меню для управления сотрудниками,
+                            кандидатами и календарём.
+                        </div>
+
+                    </div>
+
+                    <a href="{% url 'account:info' %}"
+                       class="btn-pink">
+
+                        <i class="bi bi-arrow-right"></i>
+                        Перейти в профиль
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

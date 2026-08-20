@@ -1,0 +1,214 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход | HR Система</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/theme-pink.css' %}">
+
+    <style>
+        body {
+            background: var(--bg-body);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            font-family: 'Quicksand', sans-serif;
+        }
+
+        .auth-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-card-large);
+            box-shadow: var(--shadow-card);
+            padding: 40px 44px;
+            max-width: 440px;
+            width: 100%;
+            border: 1px solid var(--border-soft);
+            transition: var(--transition);
+        }
+
+        .auth-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            margin-bottom: 28px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-soft);
+        }
+        .auth-brand i {
+            font-size: 2rem;
+            color: var(--pink-500);
+            background: var(--pink-100);
+            padding: 10px;
+            border-radius: 16px;
+        }
+        .auth-brand .brand-text strong {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .auth-header { margin-bottom: 28px; }
+        .auth-header .eyebrow {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--pink-400);
+            font-weight: 600;
+        }
+
+        .form-group { margin-bottom: 18px; }
+        .form-group label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+        .form-group .form-control {
+            border: 2px solid var(--border-soft);
+            border-radius: var(--radius-input);
+            padding: 12px 18px;
+            font-size: 0.95rem;
+            background: #fdfafb;
+            color: var(--text-primary);
+            width: 100%;
+        }
+
+        .btn-login {
+            background: linear-gradient(135deg, var(--pink-500), var(--pink-600));
+            color: #ffffff;
+            border: none;
+            padding: 14px;
+            border-radius: var(--radius-btn);
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .alert-soft {
+            border: none;
+            border-radius: var(--radius-input);
+            padding: 14px 20px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .alert-soft-danger {
+            background: #fdeaea;
+            color: #9e3b3b;
+            border-left: 4px solid #f4a4a4;
+        }
+
+        .auth-footer {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-soft);
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+
+    <main class="auth-page">
+        <div class="auth-card">
+
+            <a class="auth-brand" href="{% url 'account:login' %}">
+                <i class="bi bi-building"></i>
+                <div class="brand-text">
+                    <strong>HR <span>Система</span></strong>
+                    <small class="d-block text-muted">Управление персоналом</small>
+                </div>
+            </a>
+
+            <div class="auth-header">
+                <p class="eyebrow">Добро пожаловать</p>
+                <h1>Вход в систему</h1>
+                <p>Войдите в свой аккаунт HR-менеджера</p>
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert-soft alert-soft-{{ message.tags }}">
+                        <i class="bi bi-info-circle"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- ФОРМА С ДИНАМИЧЕСКИМ URL -->
+            <form action="{% url 'account:login' %}" method="post" novalidate>
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="id_username" class="form-label">Имя пользователя</label>
+                    <input type="text" name="username" id="id_username"
+                           class="form-control {% if form.username.errors %}is-invalid{% endif %}"
+                           placeholder="Введите логин"
+                           value="{{ form.username.value|default:'' }}"
+                           required autofocus>
+                    {% if form.username.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.username.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <label for="id_password" class="form-label">Пароль</label>
+                        <a href="#" class="small text-decoration-none">Забыли пароль?</a>
+                    </div>
+                    <input type="password" name="password" id="id_password"
+                           class="form-control {% if form.password.errors %}is-invalid{% endif %}"
+                           placeholder="Введите пароль"
+                           required>
+                    {% if form.password.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.password.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                {% if form.non_field_errors %}
+                    <div class="alert-soft alert-soft-danger">
+                        <i class="bi bi-exclamation-circle"></i>
+                        {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+
+                <div class="form-check my-3">
+                    <input type="checkbox" name="remember" class="form-check-input" id="rememberMe">
+                    <label class="form-check-label" for="rememberMe">Запомнить меня</label>
+                </div>
+
+                <button class="btn-login" type="submit">
+                    <i class="bi bi-box-arrow-in-right"></i> Войти
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                Нет аккаунта? <a href="#">Свяжитесь с администратором</a>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
