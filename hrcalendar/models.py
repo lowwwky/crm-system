@@ -1,34 +1,34 @@
 from django.db import models
-from candidates.models import HireCard
-from employees.models import EmployeeCard
 
 class HRCalendar(models.Model):
-    EVENT_TYPES = [
-        ('interview','собеседование'),
-        ('company_meeting', 'корпоративная встреча'),
-        ('company_event', 'корпоративное мероприятие'),
-        ('employee_birthday', 'день рождения сотрудника'),
-    ]
-    event_type = models.CharField(choices=EVENT_TYPES, max_length=50, default='company_meeting',verbose_name='Тип события')
+    class EventStatus(models.TextChoices):
+        INTERVIEW = 'interview','собеседование'
+        COMPANY_MEETING = 'company_meeting', 'корпоративная встреча'
+        COMPANY_EVENT = 'company_event', 'корпоративное мероприятие'
+        EMPLOYEE_BIRTHDAY = 'employee_birthday', 'день рождения сотрудника'
+
+    event_type = models.CharField(choices=EventStatus.choices, max_length=50, default=EventStatus.COMPANY_MEETING,verbose_name='Тип события')
     title = models.CharField(max_length=250, blank=True, verbose_name='Название')
     start_date = models.DateTimeField(null=True,verbose_name='Начало встречи')
     end_date = models.DateTimeField(null=True,verbose_name='Конец встречи')
-    description = models.TextField(null=True,verbose_name='Описание')
+    description = models.TextField(blank=True,verbose_name='Описание', null=True)
 
     candidate = models.ForeignKey(
-        HireCard,
+        'candidates.HireCard',
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        verbose_name='Претендент на должность'
+        verbose_name='Претендент на должность',
+        related_name='candidate',
     )
 
     employee = models.ForeignKey(
-        EmployeeCard,
+        'employees.EmployeeCard',
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        verbose_name='Сотрудник компании'
+        verbose_name='Сотрудник компании',
+        related_name='employee',
     )
 
     class Meta:

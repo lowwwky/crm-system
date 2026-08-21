@@ -32,7 +32,7 @@ def user_login(request):
 def user_logout(request):
     logout(request)
     messages.success(request,"Вы вышли из системы.")
-    return redirect("account/login")
+    return redirect("account:login")
 
 
 def user_info(request):
